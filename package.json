@@ -1,0 +1,24 @@
+{
+  "name": "discordts",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@discordjs/opus": "^0.9.0",
+    "@discordjs/voice": "^0.18.0",
+    "chalk": "^5.4.1",
+    "ffmpeg-static": "^5.2.0",
+    "glob": "^11.0.1",
+    "kazagumo": "^3.2.2",
+    "kazagumo-spotify": "^2.1.1",
+    "opusscript": "^0.1.1",
+    "pretty-ms": "^9.2.0",
+    "shoukaku": "^4.1.1",
+    "utils": "^0.3.1"
+  }
+}

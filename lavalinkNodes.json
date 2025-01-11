@@ -1,0 +1,10 @@
+{
+    "nodes": [
+        {
+          "name": "main",
+          "url": "lavalink.jirayu.net:13592",
+          "auth": "youshallnotpass",
+          "secure": false
+        }
+      ]
+  }
