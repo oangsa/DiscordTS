@@ -1,8 +1,8 @@
-import SubCommand from "../../classes/SubCommand";
-import { ChatInputCommandInteraction, GuildMember, EmbedBuilder } from "discord.js";
-import type CustomClient from "../../classes/CustomClient";
+import SubCommand from "../../../classes/SubCommand";
+import { ChatInputCommandInteraction } from "discord.js";
+import type CustomClient from "../../../classes/CustomClient";
 import type { KazagumoPlayer } from "kazagumo";
-import { PlayerManager } from "../../classes/PlayerManager";
+import { PlayerManager } from "../../../classes/PlayerManager";
 
 export default class MusicVolume extends SubCommand {
     constructor(client: CustomClient) {

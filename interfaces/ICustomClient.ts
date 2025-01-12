@@ -7,6 +7,7 @@ export default interface ICustomClient extends Client {
     commands: Map<string, Command>;
     subCommands: Map<string, SubCommand>;
     cooldowns: Map<string, Map<string, number>>;
+    developmentMode: boolean;
 
     kazagumo: CustomKazagumo;
 

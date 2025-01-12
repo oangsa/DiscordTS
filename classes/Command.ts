@@ -13,6 +13,7 @@ export default class Command implements ICommand {
     defaultMemberPermissions: bigint;
     dmPermissions: boolean;
     cooldown: number;
+    dev: boolean;
 
     constructor(client: CustomClient, options: ICommandOptions) {
         this.client = client;
@@ -23,6 +24,7 @@ export default class Command implements ICommand {
         this.defaultMemberPermissions = options.defaultMemberPermissions;
         this.dmPermissions = options.dmPermissions;
         this.cooldown = options.cooldown;
+        this.dev = options.dev;
     }
 
     public Execute(interaction: ChatInputCommandInteraction): void {}

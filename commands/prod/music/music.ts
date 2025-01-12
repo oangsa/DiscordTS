@@ -1,7 +1,7 @@
-import { ChatInputCommandInteraction, EmbedBuilder, ApplicationCommandOptionType, GuildMember, PermissionsBitField } from "discord.js";
-import Command from "../../classes/Command";
-import type CustomClient from "../../classes/CustomClient";
-import { Category } from "../../enums/Category";
+import { ChatInputCommandInteraction, ApplicationCommandOptionType, PermissionsBitField } from "discord.js";
+import Command from "../../../classes/Command";
+import type CustomClient from "../../../classes/CustomClient";
+import { Category } from "../../../enums/Category";
 
 export default class music extends Command {
     constructor(client: CustomClient) {
@@ -81,7 +81,8 @@ export default class music extends Command {
                     ],
                 }
             ],
-            cooldown: 3
+            cooldown: 3,
+            dev: false
         });
     }
 

@@ -16,6 +16,7 @@ export class PlayerManager implements IPlayerManager {
         this.embed = new EmbedBuilder().setColor("Blurple").setTimestamp();
     }
 
+    // Functional methods
     public setRepeatMode(interaction: ChatInputCommandInteraction, mode: "track" | "queue" | "none"): void {
         if (!this.player) {
             interaction.editReply({
@@ -74,5 +75,31 @@ export class PlayerManager implements IPlayerManager {
         })
 
         return;
+    }
+
+    // Utility methods
+    public isSongPlaying(interaction: ChatInputCommandInteraction): boolean {
+        return !(!this.player || !this.player.playing);
+    }
+
+    public checkForQueue(interaction: ChatInputCommandInteraction): boolean {
+        return !(!this.player || !this.player.queue.size);
+    }
+
+    // Getters
+    public getProgressbar(): string {
+        const size = 15;
+        const line = "▬";
+        const slider = "🔘";
+
+        if(!this.player.queue.current) return `${slider}${line.repeat(size - 1)}]`;
+
+        const current = this.player.queue.current.length !== 0 ? this.player.shoukaku.position : this.player.queue.current.length;
+        const total = this.player.queue.current.length as number;
+        const bar = current > total ? [line.repeat((size / 2) * 2), (current / total) * 100] : [ line.repeat(Math.round((size / 2) * (current / total))).replace(/.$/, slider) + line.repeat(size - Math.round(size * (current / total)) + 1), current / total];
+
+        if (!String(bar).includes(slider)) return `${slider}${line.repeat(size - 1)}`;
+
+        return bar[0].toString();
     }
 }

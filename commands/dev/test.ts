@@ -1,7 +1,7 @@
 import { ApplicationCommandOptionType, ChatInputCommandInteraction, PermissionsBitField } from "discord.js";
-import Command from "../classes/Command";
-import CustomClient from "../classes/CustomClient";
-import { Category } from "../enums/Category";
+import Command from "../../classes/Command";
+import CustomClient from "../../classes/CustomClient";
+import { Category } from "../../enums/Category";
 
 export default class test extends Command {
     constructor(client: CustomClient) {
@@ -18,7 +18,8 @@ export default class test extends Command {
             ],
             defaultMemberPermissions: PermissionsBitField.Flags.UseApplicationCommands,
             dmPermissions: false,
-            cooldown: 3
+            cooldown: 3,
+            dev: true
         })
     }
 

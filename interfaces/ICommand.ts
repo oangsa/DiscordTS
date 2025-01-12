@@ -8,6 +8,7 @@ export default interface ICommand {
     defaultMemberPermissions: bigint;
     dmPermissions: boolean;
     cooldown: number;
+    dev: boolean;
 
     Execute(interaction: ChatInputCommandInteraction): void;
     AutoComplete(interaction: AutocompleteInteraction): void;

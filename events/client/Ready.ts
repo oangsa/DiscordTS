@@ -22,23 +22,33 @@ export default class Ready extends Event {
     }
 
     public async Execute(): Promise<void> {
-        console.log(`Logged in as ${this.client.user?.tag}`);
+        console.log(`Logged in as ${this.client.user?.tag} in ${this.client.developmentMode ? 'development' : 'production'} mode!`);
 
-        const commands: CommandJSON[] = this.getJSON(this.client.commands);
+        const clientId = this.client.developmentMode ? this.client.config.devClientId : this.client.config.discordClientId;
+        const rest = new REST().setToken(this.client.config.devToken);
 
-        const rest = new REST().setToken(this.client.config.token);
+        if(!this.client.developmentMode) {
+            const globalCommands: any = await rest.put(Routes.applicationCommands(clientId), {
+                body: this.getJSON(this.client.commands, "global")
+            })
 
-        const setCommand: any = await rest.put(Routes.applicationGuildCommands(this.client.config.discordClientId, this.client.config.guildId), {
-            body: commands
+            console.log(`Successfully set ${globalCommands.length} global commands!`);
+        }
+
+        const localCommands: any = await rest.put(Routes.applicationGuildCommands(this.client.config.devClientId, this.client.config.devGuildId), {
+            body: this.getJSON(this.client.commands, "client")
         });
 
-        console.log(`Successfully set ${setCommand.length} commands!`)
+        console.log(`Successfully set ${localCommands.length} development commands!`)
     }
 
-    private getJSON(commands: Map<string, Command>): CommandJSON[] {
+    private getJSON(commands: Map<string, Command>, mode: "global" | "client"): CommandJSON[] {
         const json: CommandJSON[] = [];
 
         commands.forEach((cmd: Command) => {
+            if (mode === "global" && cmd.dev) return;
+            if (mode === "client" && !cmd.dev) return;
+
             json.push({
                 name: cmd.name,
                 description: cmd.description,

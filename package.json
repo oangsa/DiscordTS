@@ -2,6 +2,10 @@
   "name": "discordts",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "dev": "bun --watch index.ts --dev",
+    "prod": "bun --watch index.ts"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
