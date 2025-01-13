@@ -5,4 +5,5 @@ export default interface IConfig {
     devToken: string;
     devClientId: string;
     devGuildId: string;
+    devUserId: string;
 }

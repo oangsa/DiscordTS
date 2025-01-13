@@ -1,5 +1,5 @@
 import SubCommand from "../../../classes/SubCommand";
-import { ApplicationCommandOptionType, ChatInputCommandInteraction, GuildMember, EmbedBuilder } from "discord.js";
+import { ChatInputCommandInteraction, GuildMember, EmbedBuilder } from "discord.js";
 import type CustomClient from "../../../classes/CustomClient";
 import type { KazagumoPlayer, KazagumoSearchResult } from "kazagumo";
 import pms from "pretty-ms";
@@ -7,7 +7,7 @@ import pms from "pretty-ms";
 export default class MusicPlay extends SubCommand {
     constructor(client: CustomClient) {
         super(client, {
-            name: "music.play",
+            name: "musicdev.play",
         });
     }
 

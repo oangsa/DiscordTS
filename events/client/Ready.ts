@@ -1,4 +1,4 @@
-import { Collection, Events, REST, Routes } from "discord.js";
+import { Events, REST, Routes } from "discord.js";
 import CustomClient from "../../classes/CustomClient";
 import Event from "../../classes/Event";
 import Command from "../../classes/Command";
@@ -23,6 +23,7 @@ export default class Ready extends Event {
 
     public async Execute(): Promise<void> {
         console.log(`Logged in as ${this.client.user?.tag} in ${this.client.developmentMode ? 'development' : 'production'} mode!`);
+        this.client.logger.log(`Logged in as ${this.client.user?.tag} in ${this.client.developmentMode ? 'development' : 'production'} mode!`);
 
         const clientId = this.client.developmentMode ? this.client.config.devClientId : this.client.config.discordClientId;
         const rest = new REST().setToken(this.client.config.devToken);
@@ -35,6 +36,7 @@ export default class Ready extends Event {
             console.log(`Successfully set ${globalCommands.length} global commands!`);
         }
 
+        if (!this.client.developmentMode && this.client.config.devToken != this.client.config.token) return;
         const localCommands: any = await rest.put(Routes.applicationGuildCommands(this.client.config.devClientId, this.client.config.devGuildId), {
             body: this.getJSON(this.client.commands, "client")
         });

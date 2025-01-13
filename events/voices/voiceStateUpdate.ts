@@ -29,7 +29,8 @@ export default class VoiceStateUpdate extends Event {
                         if (player) {
                             player.destroy();
                         }
-                        else if (oldState.guild.members.me?.voice?.channel) {
+
+                        if (oldState.guild.members.me?.voice?.channel) {
                             oldState.guild.members.me.voice.disconnect();
                         }
 
@@ -37,7 +38,7 @@ export default class VoiceStateUpdate extends Event {
                             embeds: [
                                 new EmbedBuilder()
                                     .setColor("Blurple")
-                                    .setDescription("I have left the voice channel because I was alone")
+                                    .setDescription("I have left the voice channel because I was alone.")
                                     .setTimestamp()
                             ]
                         })

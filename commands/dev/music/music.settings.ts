@@ -12,7 +12,7 @@ type MusicSettingOptions = "queue" | "queueclear" | "skip" | "pause" | "resume" 
 export default class MusicSettings extends SubCommand {
     constructor(client: CustomClient) {
         super(client, {
-            name: "music.settings",
+            name: "musicdev.settings",
         });
     }
 

@@ -12,7 +12,5 @@ const { values, positionals } = parseArgs({
     allowPositionals: true,
 });
 
-console.log(values);
-
 const client = new CustomClient(values.dev);
 client.Start();

@@ -7,6 +7,9 @@ import { Connectors } from "shoukaku";
 import CustomKazagumo from "./CustomShoukaku";
 import Spotify from "kazagumo-spotify";
 import type IConfig from "../interfaces/IConfig";
+import Logger from "./Logger";
+import Timer from "./Timer";
+import VoiceRecorder from "./VoiceRecorder";
 
 const { Guilds, GuildMembers, GuildMessages, GuildVoiceStates, MessageContent } = GatewayIntentBits;
 const { User, Message, GuildMember, ThreadMember } = Partials
@@ -20,11 +23,17 @@ export default class CustomClient extends Client implements ICustomClient {
     cooldowns: Map<string, Map<string, number>>;
     kazagumo: CustomKazagumo;
     developmentMode: boolean;
+    logger: Logger;
+    timer: Timer;
+    recorder: VoiceRecorder;
 
     constructor(devMode: boolean | undefined) {
         super({ intents: [Guilds, GuildMembers, GuildMessages, GuildVoiceStates, MessageContent], partials: [User, Message, GuildMember, ThreadMember] });
 
+        this.logger = new Logger(this);
         this.handler = new Handlers(this);
+        this.timer = new Timer();
+        this.recorder = new VoiceRecorder();
         this.commands = new Map();
         this.subCommands = new Map();
         this.cooldowns = new Map();
@@ -39,6 +48,7 @@ export default class CustomClient extends Client implements ICustomClient {
             devGuildId: process.env.DEV_GUILD_ID as string,
             devClientId: process.env.DEV_DISCORD_CLIENT_ID as string,
             devToken: process.env.DEV_TOKEN as string,
+            devUserId: process.env.DEV_USER_ID as string,
         };
 
         this.kazagumo = new CustomKazagumo(this, new Connectors.DiscordJS(this), {
@@ -68,7 +78,6 @@ export default class CustomClient extends Client implements ICustomClient {
         this.handler.LoadAntiCrash();
         this.kazagumo.loadNodes()
         this.kazagumo.loadPlayers()
-
     };
 
 

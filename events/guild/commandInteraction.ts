@@ -21,9 +21,23 @@ export default class CommandInteraction extends Event {
             interaction.reply({
                 content: "Invalid command",
                 ephemeral: true
-            })
+            });
 
             this.client.commands.delete(interaction.commandName);
+
+            if (this.client.application) {
+                this.client.application.commands.delete(interaction.commandId);
+                this.client.logger.log(`Command ${interaction.commandName} has been deleted from the application commands`)
+            }
+
+            return;
+        }
+
+        if (interaction.user.id !== this.client.config.devUserId && command.dev) {
+            interaction.reply({
+                content: "This command is only available for the developer",
+                flags: "Ephemeral"
+            })
 
             return;
         }
