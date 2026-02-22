@@ -26,7 +26,7 @@ export default class Ready extends Event {
         this.client.logger.log(`Logged in as ${this.client.user?.tag} in ${this.client.developmentMode ? 'development' : 'production'} mode!`);
 
         const clientId = this.client.developmentMode ? this.client.config.devClientId : this.client.config.discordClientId;
-        const rest = new REST().setToken(this.client.config.devToken);
+        const rest = new REST().setToken(this.client.config.token);
 
         if(!this.client.developmentMode) {
             const globalCommands: any = await rest.put(Routes.applicationCommands(clientId), {

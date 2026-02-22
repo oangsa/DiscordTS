@@ -29,7 +29,7 @@ export default class Google extends Command {
             defaultMemberPermissions: PermissionsBitField.Flags.UseApplicationCommands,
             dmPermissions: true,
             cooldown: 3,
-            dev: true
+            dev: false
         })
     }
 

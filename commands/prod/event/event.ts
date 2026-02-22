@@ -79,7 +79,7 @@ export default class EventScheduler extends Command {
             defaultMemberPermissions: PermissionsBitField.Flags.UseApplicationCommands,
             dmPermissions: false,
             cooldown: 5,
-            dev: true,
+            dev: false,
         });
     }
 
