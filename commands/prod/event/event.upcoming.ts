@@ -16,12 +16,35 @@ export default class EventSchedulerUpcoming extends SubCommand {
 
             const limit = interaction.options.getInteger("limit") ?? 5;
 
-            // Search for upcoming scheduled events, ordered by start time
+            // Look up the internal user record by Discord ID
+            const userResult = await this.client.services.users.searchUsers({
+                search: [{ name: "discordId", condition: "equals", value: interaction.user.id }],
+                pageSize: 1,
+                pageNumber: 1,
+            });
+
+            if (userResult.data.length === 0) {
+                await interaction.editReply({
+                    embeds: [
+                        new EmbedBuilder()
+                            .setColor("#FF9800")
+                            .setTitle("📅 Upcoming Events")
+                            .setDescription("No upcoming events found.")
+                            .setTimestamp(),
+                    ],
+                });
+                return;
+            }
+
+            const internalUserId = userResult.data[0].id;
+
+            // Search for upcoming scheduled events for this user, ordered by start time
             const now = new Date().toISOString();
             const result = await this.client.services.events.searchEvents({
                 search: [
                     { name: "status", condition: "equals", value: EventStatus.SCHEDULED },
                     { name: "startTime", condition: "greaterThanOrEqual", value: now },
+                    { name: "createdBy", condition: "equals", value: internalUserId },
                 ],
                 orderBy: "StartTime asc",
                 pageSize: limit,
