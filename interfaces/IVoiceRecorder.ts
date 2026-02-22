@@ -16,6 +16,8 @@ export default interface IVoiceRecorder {
     getRecordedVoice<T extends Writable>(writeStream: T, guildId: string, exportType: AudioExportType, minutes: number, userVolumes: UserVolumesDict): Promise<boolean>;
     getRecordedVoiceAsBuffer(guildId: string, exportType: AudioExportType, minutes: number, userVolumes: UserVolumesDict): Promise<Buffer>;
     getRecordedVoiceAsReadable(guildId: string, exportType: AudioExportType, minutes: number, userVolumes: UserVolumesDict): Readable;
+    generateSplitRecordingAsArrayBuffer(guildId: string, endTime: number, userVolumes?: UserVolumesDict): Promise<Map<string, Buffer>>
+
 }
 
 

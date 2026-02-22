@@ -6,4 +6,7 @@ export default interface IConfig {
     devClientId: string;
     devGuildId: string;
     devUserId: string;
+
+    // API and Google OAuth configuration
+    apiBaseUrl: string;
 }

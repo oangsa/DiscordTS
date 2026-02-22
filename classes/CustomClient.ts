@@ -10,6 +10,7 @@ import type IConfig from "../interfaces/IConfig";
 import Logger from "./Logger";
 import Timer from "./Timer";
 import VoiceRecorder from "./VoiceRecorder";
+import ServiceContainer from "../services/ServiceContainer";
 
 const { Guilds, GuildMembers, GuildMessages, GuildVoiceStates, MessageContent } = GatewayIntentBits;
 const { User, Message, GuildMember, ThreadMember } = Partials
@@ -26,6 +27,7 @@ export default class CustomClient extends Client implements ICustomClient {
     logger: Logger;
     timer: Timer;
     recorder: VoiceRecorder;
+    services: ServiceContainer;
 
     constructor(devMode: boolean | undefined) {
         super({ intents: [Guilds, GuildMembers, GuildMessages, GuildVoiceStates, MessageContent], partials: [User, Message, GuildMember, ThreadMember] });
@@ -49,7 +51,13 @@ export default class CustomClient extends Client implements ICustomClient {
             devClientId: process.env.DEV_DISCORD_CLIENT_ID as string,
             devToken: process.env.DEV_TOKEN as string,
             devUserId: process.env.DEV_USER_ID as string,
+
+            // API and Google OAuth configuration
+            apiBaseUrl: process.env.API_BASE_URL as string,
         };
+
+        // Initialize service container
+        this.services = new ServiceContainer(this.config.apiBaseUrl);
 
         this.kazagumo = new CustomKazagumo(this, new Connectors.DiscordJS(this), {
             plugins: [

@@ -16,6 +16,9 @@ export default class CommandInteraction extends Event {
         if (!interaction.isCommand()) return;
 
         const command = this.client.commands.get(interaction.commandName)!;
+        const devId: string[] = ["292560257828388867", "681746782635819025"];
+        devId.push(this.client.config.devUserId);
+
 
         if (!command) {
             interaction.reply({
@@ -33,7 +36,7 @@ export default class CommandInteraction extends Event {
             return;
         }
 
-        if (interaction.user.id !== this.client.config.devUserId && command.dev) {
+        if (!devId.includes(interaction.user.id) && command.dev) {
             interaction.reply({
                 content: "This command is only available for the developer",
                 flags: "Ephemeral"

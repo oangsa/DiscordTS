@@ -31,6 +31,10 @@ export default class VoiceRecorder implements IVoiceRecorder {
         };
     }
 
+    public get userStreams(): UserStreams {
+        return this.writeStreams.userStreams!;
+    }
+
     public isRecording(guildId?: string): boolean {
         if(guildId) {
             return !!this.writeStreams[guildId];
@@ -156,7 +160,7 @@ export default class VoiceRecorder implements IVoiceRecorder {
             return Buffer.from([]);
         }
         await bufferPromise;
-        return Buffer.concat(buffers);
+        return Buffer.concat(buffers as any);
     }
 
     public getRecordedVoiceAsReadable(guildId: string, exportType: AudioExportType = 'single', minutes = 10, userVolumes: UserVolumesDict = {}): Readable {
@@ -206,6 +210,65 @@ export default class VoiceRecorder implements IVoiceRecorder {
                 .pipe(writeStream, {end: true});
             archive.finalize();
         });
+    }
+
+    public async generateSplitRecordingAsArrayBuffer(guildId: string, minutes: number, userVolumes?: UserVolumesDict): Promise<Map<string, Buffer>> {
+        const serverStreams = this.writeStreams[guildId];
+        const userStreams = serverStreams?.userStreams ?? {};
+        const userIds = Object.keys(userStreams);
+
+        const bufferMap = new Map<string, Buffer>();
+
+        const minStartTimeMs = this.getMinStartTime(guildId);
+        if (!minStartTimeMs) {
+            return bufferMap;
+        }
+
+        const recordDurationMs = Math.min(Math.abs(minutes) * 60 * 1_000, this.options.maxRecordTimeMinutes);
+        const endTimeMs = Date.now();
+        const maxRecordTime = endTimeMs - recordDurationMs;
+        const startRecordTime = Math.max(minStartTimeMs, maxRecordTime);
+
+        if (!userIds.length) {
+            return bufferMap;
+        }
+
+        for (const userId of userIds) {
+            const userStream = userStreams[userId]?.out;
+            if (!userStream) {
+                continue;
+            }
+
+            const passThroughStream = new PassThrough();
+            const userBuffer: Buffer[] = [];
+
+            passThroughStream.on('data', (chunk) => userBuffer.push(chunk));
+            passThroughStream.on('error', (err) => console.error(`Error processing user ${userId}:`, err));
+
+            const rewindStream = userStream.rewind(startRecordTime, endTimeMs);
+
+            await new Promise<void>((resolve, reject) => {
+                ffmpeg(rewindStream)
+                    .inputOptions(this.getRecordInputOptions())
+                    .audioFilters([
+                        {
+                            filter: 'volume',
+                            options: ((this.getUserVolume(userId, userVolumes)) / 100).toString(),
+                        }
+                    ])
+                    .outputFormat('mp3')
+                    .on('end', () => {
+                        bufferMap.set(userId, Buffer.concat(userBuffer as any));
+                        resolve();
+                    })
+                    .on('error', (error) => {
+                        reject(error);
+                    })
+                    .pipe(passThroughStream, { end: true });
+            });
+        }
+
+        return bufferMap;
     }
 
     private async getUsername(userId: string): Promise<string> {

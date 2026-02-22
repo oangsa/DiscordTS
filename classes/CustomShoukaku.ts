@@ -13,6 +13,15 @@ export default class CustomKazagumo implements ICustomKazagumo {
     constructor(client: CustomClient, connector: Connector, plugins: KazagumoOptions, options?: ShoukakuOptions) {
         this.client = client;
         this.shoukaku = new Kazagumo(plugins, connector, this.config.nodes, options);
+
+        // Attach fallback error handlers to prevent unhandled error crashes
+        this.shoukaku.shoukaku.on("error", (name, error) => {
+            console.error(`[Shoukaku] Error on node ${name}:`, error);
+        });
+
+        this.shoukaku.on("error", (_name, error) => {
+            console.error(`[Kazagumo] Error:`, error);
+        });
     }
 
     public async loadNodes(): Promise<void> {
