@@ -31,7 +31,7 @@ export default class GoogleLogout extends SubCommand {
                         .setTitle("❌ Not Connected")
                         .setDescription(
                             "You don't have a Google account linked.\n\n" +
-                            "Use `/googledev login` to connect your Google Calendar."
+                            "Use `/google login` to connect your Google Calendar."
                         )
                         .setTimestamp();
 
@@ -53,7 +53,7 @@ export default class GoogleLogout extends SubCommand {
                         .setTitle("❌ Not Connected")
                         .setDescription(
                             "You don't have a Google account linked.\n\n" +
-                            "Use `/googledev login` to connect your Google Calendar."
+                            "Use `/google login` to connect your Google Calendar."
                         )
                         .setTimestamp();
 

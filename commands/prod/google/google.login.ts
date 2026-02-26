@@ -46,8 +46,8 @@ export default class GoogleLogin extends SubCommand {
                     .setTitle("🔗 Already Connected")
                     .setDescription(
                         "Your Google account is already linked!\n\n" +
-                        "Use `/googledev status` to view your connection details.\n" +
-                        "Use `/googledev logout` first if you want to connect a different account."
+                        "Use `/google status` to view your connection details.\n" +
+                        "Use `/google logout` first if you want to connect a different account."
                     )
                     .addFields(
                         { name: "Email", value: account.email ?? "Unknown", inline: true },
@@ -146,7 +146,7 @@ export default class GoogleLogin extends SubCommand {
                     .setDescription(
                         "We didn't detect a successful connection within 2 minutes.\n\n" +
                         "If you completed the authorization, use `/googledev status` to check.\n" +
-                        "If not, try `/googledev login` again."
+                        "If not, try `/google login` again."
                     )
                     .setTimestamp();
 
