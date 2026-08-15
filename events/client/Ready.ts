@@ -2,6 +2,7 @@ import { Events, REST, Routes } from "discord.js";
 import CustomClient from "../../classes/CustomClient";
 import Event from "../../classes/Event";
 import Command from "../../classes/Command";
+import { startYearProgressSchedule } from "../../utils/yearProgress";
 
 interface CommandJSON {
     name: string;
@@ -36,6 +37,7 @@ export default class Ready extends Event {
             return;
         }
 
+        startYearProgressSchedule(this.client);
         const rest = new REST().setToken(this.client.config.token);
         const globalCommands: any = await rest.put(Routes.applicationCommands(this.client.config.discordClientId), {
             body: this.getJSON(this.client.commands, "global")
