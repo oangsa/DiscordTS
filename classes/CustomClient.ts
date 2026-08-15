@@ -11,6 +11,7 @@ import Logger from "./Logger";
 import Timer from "./Timer";
 import VoiceRecorder from "./VoiceRecorder";
 import ServiceContainer from "../services/ServiceContainer";
+import { PrismaClient } from "@prisma/client";
 
 const { Guilds, GuildMembers, GuildMessages, GuildVoiceStates, MessageContent } = GatewayIntentBits;
 const { User, Message, GuildMember, ThreadMember } = Partials
@@ -28,6 +29,7 @@ export default class CustomClient extends Client implements ICustomClient {
     timer: Timer;
     recorder: VoiceRecorder;
     services: ServiceContainer;
+    prisma: PrismaClient;
 
     constructor(devMode: boolean | undefined) {
         super({ intents: [Guilds, GuildMembers, GuildMessages, GuildVoiceStates, MessageContent], partials: [User, Message, GuildMember, ThreadMember] });
@@ -58,6 +60,7 @@ export default class CustomClient extends Client implements ICustomClient {
 
         // Initialize service container
         this.services = new ServiceContainer(this.config.apiBaseUrl);
+        this.prisma = new PrismaClient();
 
         this.kazagumo = new CustomKazagumo(this, new Connectors.DiscordJS(this), {
             plugins: [
@@ -81,16 +84,19 @@ export default class CustomClient extends Client implements ICustomClient {
     };
 
     private async LoadHandlers(): Promise<void> {
-        this.handler.LoadEvents();
-        this.handler.LoadCommands();
         this.handler.LoadAntiCrash();
-        this.kazagumo.loadNodes()
-        this.kazagumo.loadPlayers()
+        await Promise.all([
+            this.handler.LoadEvents(),
+            this.handler.LoadCommands(),
+            this.kazagumo.loadNodes(),
+            this.kazagumo.loadPlayers(),
+        ]);
     };
 
 
-    public Start(): void {
-        this.LoadHandlers();
-        this.login(this.developmentMode ? this.config.devToken : this.config.token);
+    public async Start(): Promise<void> {
+        await this.prisma.$connect();
+        await this.LoadHandlers();
+        await this.login(this.developmentMode ? this.config.devToken : this.config.token);
     };
 }
