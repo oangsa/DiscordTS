@@ -7,6 +7,7 @@ import type Logger from "../classes/Logger";
 import type Timer from "../classes/Timer";
 import type VoiceRecorder from "../classes/VoiceRecorder";
 import type ServiceContainer from "../services/ServiceContainer";
+import type { PrismaClient } from "@prisma/client";
 
 export default interface ICustomClient extends Client {
     config: IConfig;
@@ -19,6 +20,7 @@ export default interface ICustomClient extends Client {
     timer: Timer;
     recorder: VoiceRecorder;
     services: ServiceContainer;
+    prisma: PrismaClient;
 
-    Start(): void;
+    Start(): Promise<void>;
 }

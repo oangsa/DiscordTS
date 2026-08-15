@@ -9,9 +9,11 @@ import * as net from 'net';
 import { Server } from 'net';
 import { randomUUID } from 'crypto';
 import archiver from 'archiver';
+import ffmpegPath from 'ffmpeg-static';
 import { platform, tmpdir } from 'os';
 import type IVoiceRecorder from '../interfaces/IVoiceRecorder';
 
+if (ffmpegPath) ffmpeg.setFfmpegPath(ffmpegPath);
 
 export default class VoiceRecorder implements IVoiceRecorder {
     private readonly options: RecordOptions;
@@ -29,10 +31,6 @@ export default class VoiceRecorder implements IVoiceRecorder {
             sampleRate: (options.sampleRate ?? 16_000),
             channelCount: (options.channelCount ?? 2)
         };
-    }
-
-    public get userStreams(): UserStreams {
-        return this.writeStreams.userStreams!;
     }
 
     public isRecording(guildId?: string): boolean {

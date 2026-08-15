@@ -25,23 +25,23 @@ export default class Ready extends Event {
         console.log(`Logged in as ${this.client.user?.tag} in ${this.client.developmentMode ? 'development' : 'production'} mode!`);
         this.client.logger.log(`Logged in as ${this.client.user?.tag} in ${this.client.developmentMode ? 'development' : 'production'} mode!`);
 
-        const clientId = this.client.developmentMode ? this.client.config.devClientId : this.client.config.discordClientId;
-        const rest = new REST().setToken(this.client.config.token);
+        if (this.client.developmentMode) {
+            const rest = new REST().setToken(this.client.config.devToken);
+            const localCommands: any = await rest.put(
+                Routes.applicationGuildCommands(this.client.config.devClientId, this.client.config.devGuildId),
+                { body: this.getJSON(this.client.commands, "client") },
+            );
 
-        if(!this.client.developmentMode) {
-            const globalCommands: any = await rest.put(Routes.applicationCommands(clientId), {
-                body: this.getJSON(this.client.commands, "global")
-            })
-
-            console.log(`Successfully set ${globalCommands.length} global commands!`);
+            console.log(`Successfully set ${localCommands.length} development commands!`);
+            return;
         }
 
-        if (!this.client.developmentMode && this.client.config.devToken != this.client.config.token) return;
-        const localCommands: any = await rest.put(Routes.applicationGuildCommands(this.client.config.devClientId, this.client.config.devGuildId), {
-            body: this.getJSON(this.client.commands, "client")
+        const rest = new REST().setToken(this.client.config.token);
+        const globalCommands: any = await rest.put(Routes.applicationCommands(this.client.config.discordClientId), {
+            body: this.getJSON(this.client.commands, "global")
         });
 
-        console.log(`Successfully set ${localCommands.length} development commands!`)
+        console.log(`Successfully set ${globalCommands.length} global commands!`);
     }
 
     private getJSON(commands: Map<string, Command>, mode: "global" | "client"): CommandJSON[] {
@@ -49,8 +49,6 @@ export default class Ready extends Event {
 
         commands.forEach((cmd: Command) => {
             if (mode === "global" && cmd.dev) return;
-            if (mode === "client" && !cmd.dev) return;
-
             json.push({
                 name: cmd.name,
                 description: cmd.description,

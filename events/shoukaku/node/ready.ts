@@ -1,6 +1,4 @@
-import { Events } from "discord.js";
 import ShoukakuEvent from "../../../classes/ShoukakuEvent";
-import { Node } from "shoukaku";
 import { Chalk } from "chalk";
 
 export default class shoukakuReady extends ShoukakuEvent {
@@ -8,7 +6,7 @@ export default class shoukakuReady extends ShoukakuEvent {
         super("ready");
     }
 
-    public Execute(node: Node): void {
+    public Execute(name: string, _lavalinkResume: boolean, _libraryResume: boolean): void {
         const { magenta, white, green } = new Chalk();
 
         console.log(
@@ -16,7 +14,7 @@ export default class shoukakuReady extends ShoukakuEvent {
               magenta("Shoukaku") +
               magenta("]") +
               green(" Node ") +
-              white(node.name) +
+              white(name) +
               green(" connected!")
           );
     }

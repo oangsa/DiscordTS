@@ -19,7 +19,7 @@ export default class Handlers implements IHandler {
     public async LoadCommands(): Promise<void> {
         const files: string[] = (await glob("commands/**/*.ts")).map(filePath => path.resolve(filePath));
 
-        files.map(async (file: string) => {
+        await Promise.all(files.map(async (file: string) => {
             const cmd: Command | SubCommand = new(await import(file)).default(this.client);
 
             if (!cmd.name) return delete require.cache[require.resolve(file)] && console.log(`${file.split("/").pop()} does not have name.`)
@@ -32,14 +32,16 @@ export default class Handlers implements IHandler {
 
             return delete require.cache[require.resolve(file)];
 
-        });
+        }));
     }
 
     public async LoadEvents(): Promise<void> {
 
-        const files: string[] = (await glob("events/**/*.ts")).map(filePath => path.resolve(filePath));
+        const files: string[] = (await glob("events/**/*.ts", {
+            ignore: "events/shoukaku/**",
+        })).map(filePath => path.resolve(filePath));
 
-        files.map(async (file: string) => {
+        await Promise.all(files.map(async (file: string) => {
 
             const event = new (await import(file)).default(this.client);
 
@@ -53,7 +55,7 @@ export default class Handlers implements IHandler {
             }
 
             return delete require.cache[require.resolve(file)];
-        });
+        }));
     }
 
     public LoadAntiCrash(): void {
