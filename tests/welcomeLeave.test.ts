@@ -288,6 +288,10 @@ describe("client startup", () => {
         expect(client.commands.has("welcome-leave")).toBe(true);
         expect(client.subCommands.has("welcome-leave.register")).toBe(true);
         expect(client.subCommands.has("welcome-leave.revoke")).toBe(true);
+        expect(client.commands.has("google")).toBe(false);
+        expect(client.subCommands.has("google.login")).toBe(false);
+        expect(client.commands.has("googledev")).toBe(true);
+        expect(client.subCommands.has("googledev.login")).toBe(true);
     });
 
     test("loads commands and events before Discord login", async () => {

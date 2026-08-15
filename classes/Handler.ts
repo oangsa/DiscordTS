@@ -23,6 +23,7 @@ export default class Handlers implements IHandler {
             const cmd: Command | SubCommand = new(await import(file)).default(this.client);
 
             if (!cmd.name) return delete require.cache[require.resolve(file)] && console.log(`${file.split("/").pop()} does not have name.`)
+            if (cmd.name === "google" || cmd.name.startsWith("google.")) return;
 
             if (file.split("\\").pop()?.split(".")[1] && file.split("\\").pop()?.split(".")[1] != "ts") {
                 return this.client.subCommands.set(cmd.name, cmd)
