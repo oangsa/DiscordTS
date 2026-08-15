@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun --watch index.ts --dev",
-    "prod": "bun --watch index.ts"
+    "prod": "prisma generate && bun --watch index.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
