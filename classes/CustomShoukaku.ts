@@ -1,4 +1,4 @@
-import { Connector, Shoukaku, type NodeOption, type ShoukakuOptions } from "shoukaku";
+import { Connector, type NodeOption, type ShoukakuOptions } from "shoukaku";
 import type ICustomKazagumo from "../interfaces/ICustomShoukaku";
 import { Kazagumo, type KazagumoOptions } from "kazagumo";
 import type CustomClient from "./CustomClient";
@@ -18,31 +18,27 @@ export default class CustomKazagumo implements ICustomKazagumo {
         this.shoukaku.shoukaku.on("error", (name, error) => {
             console.error(`[Shoukaku] Error on node ${name}:`, error);
         });
-
-        this.shoukaku.on("error", (_name, error) => {
-            console.error(`[Kazagumo] Error:`, error);
-        });
     }
 
     public async loadNodes(): Promise<void> {
         const { magenta, green } = new Chalk();
         const files = await fileLoader("shoukaku/node");
 
-        files.forEach(async (file) => {
+        for (const file of files) {
             const event = new (await import(file)).default(this.client);
 
-            const execute = (...args: any) => event.Execute(...args);
+            const execute = (...args: any[]) => event.Execute(...args);
 
-            this.client.kazagumo.shoukaku.on(event.name, execute);
+            this.shoukaku.shoukaku.on(event.name, execute);
 
-            return console.log(
+            console.log(
               magenta("[") +
                 magenta("Shoukaku") +
                 magenta("]") +
                 " Loaded " +
                 green(`${event.name}.ts`)
             );
-        });
+        }
     }
 
     public async loadPlayers(): Promise<void> {
@@ -50,19 +46,19 @@ export default class CustomKazagumo implements ICustomKazagumo {
 
         const files = await fileLoader("shoukaku/player");
 
-        files.forEach(async (file) => {
+        for (const file of files) {
             const event = new (await import(file)).default(this.client);
-            const execute = (...args: any) => event.Execute(...args, this.client);
+            const execute = (...args: any[]) => event.Execute(...args, this.client);
 
-            this.client.kazagumo.shoukaku.on(event.name, execute);
+            this.shoukaku.on(event.name, execute);
 
-            return console.log(
+            console.log(
               magenta("[") +
                 magenta("Shoukaku Player") +
                 magenta("]") +
                 " Loaded " +
                 green(`${event.name}.ts`)
             );
-        });
+        }
     }
 }
