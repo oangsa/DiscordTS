@@ -1,4 +1,5 @@
 import { ChatInputCommandInteraction, EmbedBuilder, Events } from "discord.js";
+import { KazagumoError } from "kazagumo";
 import CustomClient from "../../classes/CustomClient";
 import Event from "../../classes/Event";
 
@@ -12,7 +13,7 @@ export default class CommandInteraction extends Event {
         })
     }
 
-    public Execute(interaction: ChatInputCommandInteraction): void {
+    public async Execute(interaction: ChatInputCommandInteraction): Promise<void> {
         if (!interaction.isCommand()) return;
 
         const command = this.client.commands.get(interaction.commandName)!;
@@ -76,15 +77,21 @@ export default class CommandInteraction extends Event {
             const subCommandGroup = interaction.options.getSubcommandGroup(false);
             const subCommand = `${interaction.commandName}${subCommandGroup ? `.${subCommandGroup}`: ""}.${interaction.options.getSubcommand(false) || ""}`
 
-            return this.client.subCommands.get(subCommand)?.Execute(interaction) || command.Execute(interaction)
+            const executor = this.client.subCommands.get(subCommand) || command;
+            await executor.Execute(interaction);
         }
         catch (error) {
             console.error(error);
 
-            interaction.reply({
-                content: "There was an error while executing this command!",
-                ephemeral: true
-            });
+            const content = error instanceof KazagumoError && error.code === 3
+                ? "Music is temporarily unavailable because no audio servers are connected. Please try again in a moment."
+                : "Something went wrong while running this command. Please try again.";
+
+            if (interaction.deferred || interaction.replied) {
+                await interaction.editReply({ content });
+            } else {
+                await interaction.reply({ content, flags: "Ephemeral" });
+            }
 
             return;
         }
