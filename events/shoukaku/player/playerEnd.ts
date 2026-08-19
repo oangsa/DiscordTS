@@ -2,28 +2,17 @@ import type { KazagumoPlayer } from "kazagumo";
 import ShoukakuEvent from "../../../classes/ShoukakuEvent";
 import type CustomClient from "../../../classes/CustomClient";
 import { PlayerManager } from "../../../classes/PlayerManager";
-import { Chalk } from "chalk";
 
-
-export default class PlayerStart extends ShoukakuEvent {
+export default class PlayerEnd extends ShoukakuEvent {
     client: CustomClient;
 
     constructor(client: CustomClient) {
-        super("playerDestroy");
+        super("playerEnd");
 
         this.client = client;
     }
 
     public async Execute(player: KazagumoPlayer): Promise<void> {
-        const { magenta, white } = new Chalk();
-
         await new PlayerManager(player, this.client).endNowPlaying();
-
-        console.log(
-            magenta("[") +
-              magenta("Shoukaku Player") +
-              magenta("] ") +
-              white(`Player destroyed.`)
-          );
     }
 }
