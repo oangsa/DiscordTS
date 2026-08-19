@@ -1,4 +1,4 @@
-import type { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
+import type { ActionRowBuilder, ButtonBuilder, ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import type CustomClient from "../classes/CustomClient";
 import type { KazagumoPlayer } from "kazagumo";
 
@@ -22,4 +22,5 @@ export default interface IPlayerManager {
     // Getter methods
     getProgressbar(): string;
     getNowPlayingEmbed(): EmbedBuilder;
+    getControls(): ActionRowBuilder<ButtonBuilder>[];
 }

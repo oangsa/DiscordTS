@@ -1,8 +1,8 @@
-import type { ChatInputCommandInteraction, Message } from "discord.js";
+import type { ButtonInteraction, ChatInputCommandInteraction, GuildMember, Message } from "discord.js";
 import type { KazagumoPlayer, KazagumoTrack } from "kazagumo";
 import type IPlayerManager from "../interfaces/IMusic";
 import type CustomClient from "./CustomClient";
-import { EmbedBuilder } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
 import pms from "pretty-ms";
 
 export class PlayerManager implements IPlayerManager {
@@ -20,6 +20,25 @@ export class PlayerManager implements IPlayerManager {
         this.client = client;
 
         this.embed = new EmbedBuilder().setColor("Blurple").setTimestamp();
+    }
+
+    /** Resolve the player a button press belongs to, refusing anyone outside the player's voice channel. */
+    public static async fromButton(interaction: ButtonInteraction, client: CustomClient): Promise<PlayerManager | null> {
+        const player = client.kazagumo.shoukaku.players.get(interaction.guildId as string);
+
+        if (!player) {
+            await interaction.reply({ content: "There is no music playing right now.", flags: "Ephemeral" });
+            return null;
+        }
+
+        const voiceId = (interaction.member as GuildMember)?.voice?.channelId;
+
+        if (!voiceId || voiceId !== player.voiceId) {
+            await interaction.reply({ content: "You need to be in the same voice channel as me to use this button.", flags: "Ephemeral" });
+            return null;
+        }
+
+        return new PlayerManager(player, client);
     }
 
     // Functional methods
@@ -93,7 +112,10 @@ export class PlayerManager implements IPlayerManager {
 
         if (!channel || !('send' in channel)) return;
 
-        const message = await channel.send({ embeds: [this.getNowPlayingEmbed()] });
+        const message = await channel.send({
+            embeds: [this.getNowPlayingEmbed()],
+            components: this.getControls(),
+        });
 
         this.player.data.set(PlayerManager.MESSAGE_KEY, message);
         this.player.data.set(PlayerManager.INTERVAL_KEY, setInterval(() => this.refreshNowPlaying(), PlayerManager.REFRESH_INTERVAL));
@@ -104,7 +126,10 @@ export class PlayerManager implements IPlayerManager {
 
         if (!message || !this.player.queue.current) return;
 
-        await message.edit({ embeds: [this.getNowPlayingEmbed()] }).catch(() => this.clearRefresh());
+        await message.edit({
+            embeds: [this.getNowPlayingEmbed()],
+            components: this.getControls(),
+        }).catch(() => this.clearRefresh());
     }
 
     /** Mark the current now playing message as done and drop its controls before the next track takes over. */
@@ -119,6 +144,7 @@ export class PlayerManager implements IPlayerManager {
 
         await message.edit({
             embeds: [EmbedBuilder.from(message.embeds[0]).setTitle("✅ Finished Playing").setColor("Grey")],
+            components: [],
         }).catch(() => {});
     }
 
@@ -172,5 +198,46 @@ export class PlayerManager implements IPlayerManager {
             )
             .setThumbnail(track.thumbnail as string)
             .setTimestamp();
+    }
+
+    public getControls(): ActionRowBuilder<ButtonBuilder>[] {
+        return [
+            new ActionRowBuilder<ButtonBuilder>().setComponents(
+                new ButtonBuilder()
+                    .setCustomId("music_pause")
+                    .setEmoji("⏸️")
+                    .setStyle(ButtonStyle.Primary)
+                    .setDisabled(this.player.paused),
+
+                new ButtonBuilder()
+                    .setCustomId("music_resume")
+                    .setEmoji("▶️")
+                    .setStyle(ButtonStyle.Primary)
+                    .setDisabled(!this.player.paused),
+
+                new ButtonBuilder()
+                    .setCustomId("music_skip")
+                    .setEmoji("⏭️")
+                    .setStyle(ButtonStyle.Primary),
+            ),
+
+            new ActionRowBuilder<ButtonBuilder>().setComponents(
+                new ButtonBuilder()
+                    .setCustomId("music_loop")
+                    .setEmoji("🔁")
+                    .setStyle(ButtonStyle.Success),
+
+                new ButtonBuilder()
+                    .setCustomId("music_shuffle")
+                    .setEmoji("🔀")
+                    .setStyle(ButtonStyle.Success)
+                    .setDisabled(!this.player.queue.size),
+
+                new ButtonBuilder()
+                    .setCustomId("music_stop")
+                    .setEmoji("⏹️")
+                    .setStyle(ButtonStyle.Danger),
+            ),
+        ];
     }
 }
