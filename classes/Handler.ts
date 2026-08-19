@@ -2,6 +2,7 @@ import type IHandler from "../interfaces/IHandler";
 import path from "path";
 import Command from "./Command";
 import SubCommand from "./SubCommand";
+import Button from "./Button";
 import { glob } from "glob";
 import CustomClient from "./CustomClient";
 import { EmbedBuilder, WebhookClient } from "discord.js";
@@ -33,6 +34,20 @@ export default class Handlers implements IHandler {
 
             return delete require.cache[require.resolve(file)];
 
+        }));
+    }
+
+    public async LoadButtons(): Promise<void> {
+        const files: string[] = (await glob("buttons/**/*.ts")).map(filePath => path.resolve(filePath));
+
+        await Promise.all(files.map(async (file: string) => {
+            const button: Button = new(await import(file)).default(this.client);
+
+            if (!button.customId) return delete require.cache[require.resolve(file)] && console.log(`${file.split("/").pop()} does not have customId.`)
+
+            this.client.buttons.set(button.customId, button);
+
+            return delete require.cache[require.resolve(file)];
         }));
     }
 

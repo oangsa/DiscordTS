@@ -1,6 +1,7 @@
 import type { Client } from "discord.js";
 import Command from "../classes/Command";
 import SubCommand from "../classes/SubCommand";
+import Button from "../classes/Button";
 import type CustomKazagumo from "../classes/CustomShoukaku";
 import type IConfig from "./IConfig";
 import type Logger from "../classes/Logger";
@@ -13,6 +14,7 @@ export default interface ICustomClient extends Client {
     config: IConfig;
     commands: Map<string, Command>;
     subCommands: Map<string, SubCommand>;
+    buttons: Map<string, Button>;
     cooldowns: Map<string, Map<string, number>>;
     developmentMode: boolean;
     kazagumo: CustomKazagumo;

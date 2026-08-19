@@ -302,6 +302,7 @@ describe("client startup", () => {
             LoadAntiCrash: mock(() => { order.push("anti-crash"); }),
             LoadEvents: mock(async () => { await Promise.resolve(); order.push("events"); }),
             LoadCommands: mock(async () => { await Promise.resolve(); order.push("commands"); }),
+            LoadButtons: mock(async () => { await Promise.resolve(); order.push("buttons"); }),
         };
         client.kazagumo = {
             loadNodes: mock(async () => { await Promise.resolve(); order.push("nodes"); }),
@@ -317,6 +318,7 @@ describe("client startup", () => {
         expect(order[0]).toBe("database");
         expect(order.indexOf("events")).toBeLessThan(loginIndex);
         expect(order.indexOf("commands")).toBeLessThan(loginIndex);
+        expect(order.indexOf("buttons")).toBeLessThan(loginIndex);
         expect(order.indexOf("nodes")).toBeLessThan(loginIndex);
         expect(order.indexOf("players")).toBeLessThan(loginIndex);
     });

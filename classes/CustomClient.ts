@@ -3,6 +3,7 @@ import type ICustomClient from "../interfaces/ICustomClient";
 import Handlers from "./Handler";
 import Command from "./Command";
 import SubCommand from "./SubCommand";
+import Button from "./Button";
 import { Connectors } from "shoukaku";
 import CustomKazagumo from "./CustomShoukaku";
 import Spotify from "kazagumo-spotify";
@@ -22,6 +23,7 @@ export default class CustomClient extends Client implements ICustomClient {
     handler: Handlers;
     commands: Map<string, Command>;
     subCommands: Map<string, SubCommand>;
+    buttons: Map<string, Button>;
     cooldowns: Map<string, Map<string, number>>;
     kazagumo: CustomKazagumo;
     developmentMode: boolean;
@@ -40,6 +42,7 @@ export default class CustomClient extends Client implements ICustomClient {
         this.recorder = new VoiceRecorder();
         this.commands = new Map();
         this.subCommands = new Map();
+        this.buttons = new Map();
         this.cooldowns = new Map();
 
         this.developmentMode = devMode ? devMode : false;
@@ -88,6 +91,7 @@ export default class CustomClient extends Client implements ICustomClient {
         await Promise.all([
             this.handler.LoadEvents(),
             this.handler.LoadCommands(),
+            this.handler.LoadButtons(),
             this.kazagumo.loadNodes(),
             this.kazagumo.loadPlayers(),
         ]);
